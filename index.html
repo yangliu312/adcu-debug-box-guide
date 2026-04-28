@@ -158,7 +158,50 @@
       <span class="arrow">▼</span>
     </div>
     <div class="card-body show">
-      <img src="debug_box_annotated.png" style="width:100%; border-radius:8px; margin:10px 0;" alt="接口总览">
+      <!-- 接口图片区 -->
+      <div style="display:flex; flex-direction:column; gap:12px; margin-bottom:14px;">
+
+        <!-- 图1：供电 + OCuLink 面 -->
+        <div style="border-radius:10px; overflow:hidden; box-shadow:0 2px 8px rgba(0,0,0,0.1);">
+          <div style="background:#1a73e8; color:#fff; font-size:13px; font-weight:600; padding:6px 14px;">
+            供电 &amp; OCuLink 面（12V_1 / 12V_2 / 42P / 80P）
+          </div>
+          <img src="side_power_ocuLink.jpg" style="width:100%; display:block;" alt="供电OCuLink面">
+        </div>
+
+        <!-- 图2：JTAG + Type-C供电 面 -->
+        <div style="border-radius:10px; overflow:hidden; box-shadow:0 2px 8px rgba(0,0,0,0.1);">
+          <div style="background:#1a73e8; color:#fff; font-size:13px; font-weight:600; padding:6px 14px;">
+            JTAG &amp; Type-C 供电面（MCU_JT / SOC_JT / 5V）
+          </div>
+          <img src="side_jtag_typec.jpg" style="width:100%; display:block;" alt="JTAG面">
+        </div>
+
+        <!-- 图3：USB + 以太网 + Switch JTAG 面 -->
+        <div style="border-radius:10px; overflow:hidden; box-shadow:0 2px 8px rgba(0,0,0,0.1);">
+          <div style="background:#1a73e8; color:#fff; font-size:13px; font-weight:600; padding:6px 14px;">
+            USB &amp; 以太网面（SOCUSB / S_USB1 / 10GE / S_USB2 / SW_JT）
+          </div>
+          <img src="side_usb_eth.jpg" style="width:100%; display:block;" alt="USB以太网面">
+        </div>
+
+        <!-- 图4+图5：拨码开关 和 指示灯 并排 -->
+        <div style="display:flex; gap:12px; flex-wrap:wrap;">
+          <div style="flex:2; min-width:220px; border-radius:10px; overflow:hidden; box-shadow:0 2px 8px rgba(0,0,0,0.1);">
+            <div style="background:#1a73e8; color:#fff; font-size:13px; font-weight:600; padding:6px 14px;">
+              拨码开关（SW1 / SW2）
+            </div>
+            <img src="top_dip_switch.jpg" style="width:100%; display:block;" alt="拨码开关">
+          </div>
+          <div style="flex:1; min-width:160px; border-radius:10px; overflow:hidden; box-shadow:0 2px 8px rgba(0,0,0,0.1);">
+            <div style="background:#1a73e8; color:#fff; font-size:13px; font-weight:600; padding:6px 14px;">
+              指示灯（PWR / Master / Slave）
+            </div>
+            <img src="led_indicator.jpg" style="width:100%; display:block;" alt="指示灯">
+          </div>
+        </div>
+
+      </div>
       <div class="tbl-wrap">
         <table>
           <tr><th>接口/器件</th><th>功能说明</th></tr>
