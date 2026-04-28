@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ADCU 调试盒子快速上手指南</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+    background: #f5f6fa;
+    color: #2c3e50;
+    font-size: 15px;
+    line-height: 1.7;
+  }
+  /* 顶部 Banner */
+  .banner {
+    background: linear-gradient(135deg, #1a73e8 0%, #0d47a1 100%);
+    color: #fff;
+    padding: 28px 20px 22px;
+    text-align: center;
+  }
+  .banner h1 { font-size: 22px; font-weight: 700; letter-spacing: 1px; }
+  .banner .subtitle { font-size: 13px; opacity: 0.85; margin-top: 6px; }
+  .badge-row { display: flex; justify-content: center; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
+  .badge {
+    background: rgba(255,255,255,0.2);
+    border-radius: 20px;
+    padding: 3px 12px;
+    font-size: 12px;
+  }
+
+  /* 主内容区 */
+  .container { max-width: 780px; margin: 0 auto; padding: 16px 14px 40px; }
+
+  /* 卡片 */
+  .card {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.07);
+    margin-bottom: 16px;
+    overflow: hidden;
+  }
+  .card-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 18px;
+    background: #f0f4ff;
+    border-bottom: 1px solid #e4eaff;
+    cursor: pointer;
+    user-select: none;
+  }
+  .card-header .icon { font-size: 20px; }
+  .card-header .title { font-size: 16px; font-weight: 700; color: #1a73e8; flex: 1; }
+  .card-header .arrow { font-size: 12px; color: #888; transition: transform 0.3s; }
+  .card-header.open .arrow { transform: rotate(180deg); }
+  .card-body { padding: 16px 18px; display: none; }
+  .card-body.show { display: block; }
+
+  /* 段落 & 列表 */
+  p { margin-bottom: 10px; }
+  ul, ol { padding-left: 20px; margin-bottom: 10px; }
+  li { margin-bottom: 5px; }
+
+  /* 警告框 */
+  .alert {
+    border-radius: 8px;
+    padding: 12px 14px;
+    margin: 10px 0;
+    font-size: 14px;
+  }
+  .alert-warn { background: #fff8e1; border-left: 4px solid #ffc107; }
+  .alert-info { background: #e3f2fd; border-left: 4px solid #1a73e8; }
+  .alert-success { background: #e8f5e9; border-left: 4px solid #4caf50; }
+
+  /* 表格 */
+  .tbl-wrap { overflow-x: auto; margin: 10px 0; }
+  table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+  th {
+    background: #1a73e8;
+    color: #fff;
+    padding: 9px 12px;
+    text-align: left;
+    font-weight: 600;
+  }
+  td { padding: 8px 12px; border-bottom: 1px solid #eee; vertical-align: top; }
+  tr:last-child td { border-bottom: none; }
+  tr:nth-child(even) td { background: #f9fbff; }
+
+  /* 步骤块 */
+  .steps { counter-reset: step; }
+  .step {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+  .step-num {
+    min-width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: #1a73e8;
+    color: #fff;
+    font-size: 13px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .step-content { flex: 1; }
+
+  /* LED 状态 */
+  .led-row { display: flex; gap: 10px; flex-wrap: wrap; margin: 10px 0; }
+  .led-chip {
+    border-radius: 8px;
+    padding: 8px 14px;
+    font-size: 13px;
+    font-weight: 600;
+  }
+  .led-green { background: #e8f5e9; color: #2e7d32; border: 1px solid #a5d6a7; }
+  .led-orange { background: #fff3e0; color: #e65100; border: 1px solid #ffcc80; }
+  .led-red   { background: #ffebee; color: #c62828; border: 1px solid #ef9a9a; }
+
+  /* FAQ */
+  .faq-item { border: 1px solid #e8eaf6; border-radius: 8px; margin-bottom: 10px; overflow: hidden; }
+  .faq-q {
+    padding: 12px 16px;
+    font-weight: 700;
+    color: #1a73e8;
+    cursor: pointer;
+    background: #f5f7ff;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    user-select: none;
+  }
+  .faq-a { padding: 12px 16px; font-size: 14px; display: none; border-top: 1px solid #e8eaf6; }
+  .faq-a.show { display: block; }
+
+  /* code */
+  code {
+    background: #f1f3f9;
+    border-radius: 4px;
+    padding: 1px 6px;
+    font-family: "Courier New", monospace;
+    font-size: 13px;
+    color: #c7254e;
+  }
+
+  /* tag */
+  .tag {
+    display: inline-block;
+    border-radius: 4px;
+    padding: 1px 8px;
+    font-size: 12px;
+    font-weight: 600;
+    margin-right: 4px;
+  }
+  .tag-todo { background: #fff3cd; color: #856404; }
+  .tag-done { background: #d1e7dd; color: #0a3622; }
+
+  /* 底部 */
+  .footer {
+    text-align: center;
+    font-size: 12px;
+    color: #aaa;
+    margin-top: 30px;
+    padding-bottom: 20px;
+  }
+</style>
+</head>
+<body>
+
+<!-- Banner -->
+<div class="banner">
+  <h1>🔧 ADCU 调试盒子快速上手指南</h1>
+  <div class="subtitle">Debug_Box_A1 · 硬件负责人：Yang Liu</div>
+  <div class="badge-row">
+    <span class="badge">📅 2026-04-22</span>
+    <span class="badge">📄 V0.1 草稿</span>
+    <span class="badge">适用：Debug_Box_A1</span>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- 一、产品简介 -->
+  <div class="card">
+    <div class="card-header open" onclick="toggle(this)">
+      <span class="icon">📦</span>
+      <span class="title">一、产品简介</span>
+      <span class="arrow">▼</span>
+    </div>
+    <div class="card-body show">
+      <p>ADCU 调试盒子（Debug_Box_A1）是配套 ADCU 域控制器使用的硬件调试辅助板，通过 OCuLink 连接器与域控主板对插，将域控内部的调试信号引出，提供以下能力：</p>
+      <ul>
+        <li>🖥️ <strong>串口调试</strong>：6 路 UART，覆盖 MCU、SOC MD、SOC SAIL 等各域串口 log</li>
+        <li>🔌 <strong>JTAG 烧录调试</strong>：MCU JTAG、SOC JTAG、ETH Switch JTAG 三路独立接口</li>
+        <li>🌐 <strong>以太网调试</strong>：10GBASE-T 网口，通过 88X3310P PHY 转出标准 RJ45</li>
+        <li>⚙️ <strong>Boot 模式切换</strong>：拨码开关控制域控启动模式</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- 二、接口总览 -->
+  <div class="card">
+    <div class="card-header open" onclick="toggle(this)">
+      <span class="icon">🔌</span>
+      <span class="title">二、接口总览</span>
+      <span class="arrow">▼</span>
+    </div>
+    <div class="card-body show">
+      <div class="tbl-wrap">
+        <table>
+          <tr><th>接口 / 器件</th><th>功能说明</th></tr>
+          <tr><td>OCuLink 80Pin 连接器</td><td>连接 ADCU 主板，传输 UART / MCU JTAG / USXGMII / Boot 信号</td></tr>
+          <tr><td>OCuLink 42Pin 连接器</td><td>连接外部 SSD 盒子，传输 PCIe 4.0 + SOC JTAG + Switch JTAG</td></tr>
+          <tr><td>以太网接口（RJ45）</td><td>10GBASE-T 网口，连接 PC 或交换机</td></tr>
+          <tr><td>串口调试接口</td><td>FT4232 USB 串口，连接 PC</td></tr>
+          <tr><td>预留串口调试接口</td><td>预留通道（暂未使用）</td></tr>
+          <tr><td>USB 烧录接口</td><td>USB Type-C，固件烧录用</td></tr>
+          <tr><td>MCU JTAG 接口</td><td>连接仿真器，调试 MCU</td></tr>
+          <tr><td>SOC JTAG 接口</td><td>连接仿真器，调试 SOC</td></tr>
+          <tr><td>Switch JTAG 接口</td><td>调试 88Q5152 以太网交换芯片</td></tr>
+          <tr><td>拨码开关</td><td>Boot 模式切换</td></tr>
+          <tr><td>车载 2Pin 连接器</td><td>12V 车载供电输入（TE 2489809-1）</td></tr>
+          <tr><td>DC5521 连接器</td><td>实验室电源供电（5.5/2.1mm 圆头）</td></tr>
+          <tr><td>Type-C 供电接口</td><td>USB PD 供电</td></tr>
+          <tr><td>🟢 主域绿色 LED</td><td>亮绿灯 = 识别为主域调试盒，连接正常</td></tr>
+          <tr><td>🟠 辅域橙色 LED</td><td>亮橙灯 = 识别为辅域调试盒，连接正常</td></tr>
+          <tr><td>🔴 红色 LED</td><td>亮红灯 = 调试小板上电</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- 三、供电 -->
+  <div class="card">
+    <div class="card-header open" onclick="toggle(this)">
+      <span class="icon">⚡</span>
+      <span class="title">三、供电方式</span>
+      <span class="arrow">▼</span>
+    </div>
+    <div class="card-body show">
+      <p>调试盒支持三种供电方式，<strong>任选其一，请勿同时接入多路电源</strong>：</p>
+      <div class="tbl-wrap">
+        <table>
+          <tr><th>方式</th><th>接口</th><th>电压</th><th>推荐场景</th></tr>
+          <tr><td>🚗 车载供电</td><td>车载 2Pin（TE 2489809-1）</td><td>12V，Pin1=12V，Pin2=GND</td><td>实车 / 台架</td></tr>
+          <tr><td>🔬 实验室电源</td><td>DC5521 圆头</td><td>12V</td><td>实验室台架调试</td></tr>
+          <tr><td>💻 USB PD</td><td>Type-C 供电接口</td><td>5V</td><td>便携场景</td></tr>
+        </table>
+      </div>
+      <div class="alert alert-warn">
+        ⚠️ 上电前请确认 OCuLink 连接器已完全咬合（听到卡塔声）。未插 OCuLink 时调试盒不会上电，LED 不亮，属正常现象。
+      </div>
+    </div>
+  </div>
+
+  <!-- 四、硬件连接步骤 -->
+  <div class="card">
+    <div class="card-header open" onclick="toggle(this)">
+      <span class="icon">🛠️</span>
+      <span class="title">四、硬件连接步骤</span>
+      <span class="arrow">▼</span>
+    </div>
+    <div class="card-body show">
+      <div class="steps">
+        <div class="step"><div class="step-num">1</div><div class="step-content">确认调试盒<strong>断电</strong>，将拨码开关拨到目标 Boot 模式（见第六节）</div></div>
+        <div class="step"><div class="step-num">2</div><div class="step-content">连接 <strong>OCuLink 80Pin</strong> 和 <strong>OCuLink 42Pin</strong>：与 ADCU15 主板对应连接器对插，确认完全咬合</div></div>
+        <div class="step"><div class="step-num">3</div><div class="step-content">（如需数采）连接 <strong>OCuLink 42Pin</strong>：接 SSD 硬盘盒</div></div>
+        <div class="step"><div class="step-num">4</div><div class="step-content">根据调试需求连接 PC：串口调试 → USB 线接<strong>串口调试接口</strong>；以太网调试 → 网线接 <strong>RJ45 口</strong>；JTAG 调试 → 仿真器接对应 <strong>JTAG 接口</strong></div></div>
+        <div class="step"><div class="step-num">5</div><div class="step-content">接入电源，观察 LED 状态：</div></div>
+      </div>
+      <div class="led-row">
+        <div class="led-chip led-green">🟢 绿灯亮 → 主域，连接正常</div>
+        <div class="led-chip led-orange">🟠 橙灯亮 → 辅域，连接正常</div>
+        <div class="led-chip led-red">🔴 灯不亮 → 检查 OCuLink 或供电</div>
+      </div>
+      <div class="alert alert-info" style="margin-top:12px;">
+        <strong>主辅域识别说明：</strong>调试盒通过 OCuLink 80Pin 上的电阻配置自动识别主辅域，无需手动设置。
+      </div>
+    </div>
+  </div>
+
+  <!-- 五、PC 端驱动 -->
+  <div class="card">
+    <div class="card-header" onclick="toggle(this)">
+      <span class="icon">💾</span>
+      <span class="title">五、PC 端驱动安装</span>
+      <span class="arrow">▼</span>
+    </div>
+    <div class="card-body">
+      <p><strong>FT4232 USB 串口驱动</strong></p>
+      <div class="steps">
+        <div class="step"><div class="step-num">1</div><div class="step-content">下载并安装 FTDI CDM 驱动 <span class="tag tag-todo">待补充下载链接</span></div></div>
+        <div class="step"><div class="step-num">2</div><div class="step-content">USB 线连接调试盒串口调试接口</div></div>
+        <div class="step"><div class="step-num">3</div><div class="step-content">打开设备管理器 → 端口（COM 和 LPT），确认出现新增 COM 口</div></div>
+      </div>
+      <div class="alert alert-info">正常应出现 <strong>6 个</strong> COM 口，设备名含 "USB Serial Port" 或 "FT4232"</div>
+      <div class="tbl-wrap" style="margin-top:10px;">
+        <table>
+          <tr><th>COM 口</th><th>对应串口</th><th>波特率</th></tr>
+          <tr><td><span class="tag tag-todo">待补充</span></td><td>MCU 串口</td><td>115200 / 8N1</td></tr>
+          <tr><td><span class="tag tag-todo">待补充</span></td><td>SOC MD 串口</td><td>115200 / 8N1</td></tr>
+          <tr><td><span class="tag tag-todo">待补充</span></td><td>SOC SAIL 串口</td><td>115200 / 8N1</td></tr>
+          <tr><td><span class="tag tag-todo">待补充</span></td><td>其他</td><td>115200 / 8N1</td></tr>
+        </table>
+      </div>
+      <p style="margin-top:8px;">推荐串口工具：<code>MobaXterm</code> / <code>SecureCRT</code></p>
+    </div>
+  </div>
+
+  <!-- 六、Boot 模式 -->
+  <div class="card">
+    <div class="card-header" onclick="toggle(this)">
+      <span class="icon">🔄</span>
+      <span class="title">六、Boot 模式切换</span>
+      <span class="arrow">▼</span>
+    </div>
+    <div class="card-body">
+      <p>调试盒右侧拨码开关控制 ADCU 域控的启动模式，修改后需<strong>重新上电</strong>生效：</p>
+      <div class="tbl-wrap">
+        <table>
+          <tr><th>拨码组合</th><th>启动模式</th><th>说明</th></tr>
+          <tr><td><span class="tag tag-todo">待补充</span></td><td>正常启动</td><td>日常调试使用</td></tr>
+          <tr><td><span class="tag tag-todo">待补充</span></td><td>固件下载模式</td><td>烧录固件时使用</td></tr>
+          <tr><td><span class="tag tag-todo">待补充</span></td><td>其他模式</td><td>待补充</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- 七、各功能快速使用 -->
+  <div class="card">
+    <div class="card-header" onclick="toggle(this)">
+      <span class="icon">🚀</span>
+      <span class="title">七、各功能快速使用</span>
+      <span class="arrow">▼</span>
+    </div>
+    <div class="card-body">
+
+      <p><strong>7.1 串口 Log 抓取</strong></p>
+      <div class="steps">
+        <div class="step"><div class="step-num">1</div><div class="step-content">连接串口调试接口，安装 FT4232 驱动（见第五节）</div></div>
+        <div class="step"><div class="step-num">2</div><div class="step-content">打开串口终端，选择对应 COM 口，参数 <code>115200/8N1</code></div></div>
+        <div class="step"><div class="step-num">3</div><div class="step-content">ADCU 上电，观察串口输出</div></div>
+      </div>
+      <div class="alert alert-success">✅ Pass 标准：上电后 10 秒内收到启动 log，内容可读，无乱码</div>
+
+      <hr style="margin:16px 0; border:none; border-top:1px solid #eee;">
+      <p><strong>7.2 MCU JTAG 烧录</strong></p>
+      <div class="steps">
+        <div class="step"><div class="step-num">1</div><div class="step-content">仿真器连接 <strong>MCU JTAG 接口</strong>，连接 OCuLink 80Pin</div></div>
+        <div class="step"><div class="step-num">2</div><div class="step-content">执行 TAP 扫描，确认识别 MCU（JTAG ID：<span class="tag tag-todo">待补充</span>）</div></div>
+        <div class="step"><div class="step-num">3</div><div class="step-content">烧录固件镜像，等待提示 "Verify OK"</div></div>
+        <div class="step"><div class="step-num">4</div><div class="step-content">复位后观察串口 log 确认启动正常</div></div>
+      </div>
+
+      <hr style="margin:16px 0; border:none; border-top:1px solid #eee;">
+      <p><strong>7.3 SOC JTAG 烧录</strong></p>
+      <div class="steps">
+        <div class="step"><div class="step-num">1</div><div class="step-content">仿真器连接 <strong>SOC JTAG 接口</strong>，连接 OCuLink 42Pin</div></div>
+        <div class="step"><div class="step-num">2</div><div class="step-content">TAP 扫描确认识别 SOC，烧录 MD 域 + SAIL 域固件</div></div>
+        <div class="step"><div class="step-num">3</div><div class="step-content">上电后两路串口均应收到完整启动 log，无乱码</div></div>
+      </div>
+
+      <hr style="margin:16px 0; border:none; border-top:1px solid #eee;">
+      <p><strong>7.4 以太网调试</strong></p>
+      <div class="steps">
+        <div class="step"><div class="step-num">1</div><div class="step-content">网线连接调试盒 <strong>RJ45 口</strong> → PC 或交换机</div></div>
+        <div class="step"><div class="step-num">2</div><div class="step-content">观察 RJ45 指示灯：<strong>绿灯常亮 = 1000M 链路建立</strong></div></div>
+        <div class="step"><div class="step-num">3</div><div class="step-content">PC 配置同网段静态 IP，ping ADCU IP 地址（100 包）</div></div>
+        <div class="step"><div class="step-num">4</div><div class="step-content">（可选）iperf3 带宽测试，目标 ≥ 900 Mbps</div></div>
+      </div>
+      <div class="alert alert-success">✅ Pass 标准：ping 100 包丢包率 0%，RTT &lt; 2ms</div>
+    </div>
+  </div>
+
+  <!-- 八、FAQ -->
+  <div class="card">
+    <div class="card-header" onclick="toggle(this)">
+      <span class="icon">❓</span>
+      <span class="title">八、常见问题 FAQ</span>
+      <span class="arrow">▼</span>
+    </div>
+    <div class="card-body">
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">Q1：上电后 LED 全不亮？ <span>▼</span></div>
+        <div class="faq-a">检查 OCuLink 80Pin 是否完全插到位（需听到卡塔声）；检查供电线是否正确接入。</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">Q2：PC 设备管理器看不到 COM 口？ <span>▼</span></div>
+        <div class="faq-a">① 确认 FT4232 驱动已安装；② 换一根支持数据传输的 USB 线；③ 确认连接的是<strong>串口调试接口</strong>（顶部右侧 Type-C），而非左下角的供电 Type-C。</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">Q3：串口有输出但乱码？ <span>▼</span></div>
+        <div class="faq-a">确认波特率为 <code>115200</code>，格式为 <code>8N1</code>；确认连接了正确的 COM 口。</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">Q4：JTAG 仿真器无法识别？ <span>▼</span></div>
+        <div class="faq-a">① 检查仿真器与 JTAG 排针连接方向（注意 Pin1 标记）；② 确认 ADCU 域控已上电；③ 确认 OCuLink 已完全连接。</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">Q5：以太网 ping 不通？ <span>▼</span></div>
+        <div class="faq-a">① 确认 RJ45 指示灯亮；② 检查 PC 侧 IP 与 ADCU 是否在同一网段；③ 检查防火墙设置。</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 九、注意事项 -->
+  <div class="card">
+    <div class="card-header" onclick="toggle(this)">
+      <span class="icon">⚠️</span>
+      <span class="title">九、注意事项</span>
+      <span class="arrow">▼</span>
+    </div>
+    <div class="card-body">
+      <ul>
+        <li>OCuLink 连接器插拔请在<strong>断电状态</strong>下进行，带电热插拔可能损坏器件</li>
+        <li>JTAG 接口引脚较细，插拔时注意方向，避免弯针</li>
+        <li>拨码开关修改后需<strong>重新上电</strong>才能生效</li>
+        <li>请勿同时接入多路电源</li>
+        <li>调试盒工作温度范围：<span class="tag tag-todo">待补充</span></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="footer">
+    Debug_Box_A1 · ADCU 调试盒子快速上手指南 · V0.1 · 2026-04-22<br>
+    硬件负责人：Yang Liu
+  </div>
+
+</div><!-- /container -->
+
+<script>
+function toggle(header) {
+  header.classList.toggle('open');
+  const body = header.nextElementSibling;
+  body.classList.toggle('show');
+}
+function toggleFaq(q) {
+  const a = q.nextElementSibling;
+  a.classList.toggle('show');
+}
+// 默认展开前4个
+document.querySelectorAll('.card-body').forEach((b, i) => {
+  if (i < 4) b.classList.add('show');
+});
+document.querySelectorAll('.card-header').forEach((h, i) => {
+  if (i < 4) h.classList.add('open');
+});
+</script>
+</body>
+</html>
