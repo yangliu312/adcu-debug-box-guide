@@ -16,8 +16,17 @@
   .banner {
     background: linear-gradient(135deg, #1a73e8 0%, #0d47a1 100%);
     color: #fff;
-    padding: 28px 20px 22px;
+    padding: 18px 20px 22px;
     text-align: center;
+  }
+  .banner-logo {
+    display: block;
+    margin: 0 auto 10px;
+    height: 32px;
+    width: auto;
+    mix-blend-mode: screen;
+    filter: brightness(0) invert(1);
+    opacity: 0.92;
   }
   .banner h1 { font-size: 22px; font-weight: 700; letter-spacing: 1px; }
   .banner .subtitle { font-size: 13px; opacity: 0.85; margin-top: 6px; }
@@ -102,6 +111,7 @@
 <body>
 
 <div class="banner">
+  <img src="logo.webp" alt="Momenta" class="banner-logo">
   <h1>🔧 ADCU 调试盒子快速上手指南</h1>
   <div class="subtitle">Debug_Box_A1 · 硬件负责人：Yang Liu</div>
   <div class="badge-row">
