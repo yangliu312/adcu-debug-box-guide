@@ -326,14 +326,21 @@
       <span class="arrow">▼</span>
     </div>
     <div class="card-body">
-      <div class="img-placeholder">
-          拨码开关示意图（请在飞书文档查看原图）
-      </div>
       <p>调试盒右侧拨码开关控制 ADCU 域控的启动模式，修改后需<strong>重新上电</strong>生效：</p>
+
+      <!-- 正常启动拨码图 -->
+      <div style="border-radius:10px; overflow:hidden; box-shadow:0 2px 8px rgba(0,0,0,0.12); margin:12px 0;">
+        <img src="dip_switch_normal_boot.jpg" style="width:100%; display:block;" alt="正常启动拨码位置">
+      </div>
+
       <div class="tbl-wrap">
         <table>
           <tr><th>拨码组合</th><th>启动模式</th><th>说明</th></tr>
-          <tr><td><span class="tag tag-todo">待补充</span></td><td>正常启动</td><td>日常调试使用</td></tr>
+          <tr>
+            <td><strong>SW1（1-8）全部 OFF<br>SW2（1-4）全部 OFF</strong></td>
+            <td>✅ 正常启动</td>
+            <td>日常调试使用，如图所示</td>
+          </tr>
           <tr><td><span class="tag tag-todo">待补充</span></td><td>固件下载模式</td><td>烧录固件时使用</td></tr>
           <tr><td><span class="tag tag-todo">待补充</span></td><td>其他模式</td><td><span class="tag tag-todo">待补充</span></td></tr>
         </table>
